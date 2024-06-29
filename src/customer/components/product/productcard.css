@@ -1,0 +1,19 @@
+/* this is for animation..3s means 3 second.. */
+
+/* .3s:
+
+This specifies the duration of the transition, which is 0.3 seconds (300 milliseconds). It means that any change to the transform property will take 0.3 seconds to complete.
+ease-out:
+
+This is the timing function that controls the speed of the transition over time. ease-out means the transition will start quickly and then slow down towards the end, creating a smooth effect. */
+.productcard{
+   transition: transform .3s ease-out;
+}
+
+/* move in y direction for upword -1rem */
+.productcard:hover{
+    transform:translateY(-1rem)
+}
+.productcard:hover{
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;   
+}
