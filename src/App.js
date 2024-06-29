@@ -2,7 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 
 import Product from './customer/components/product/product';
-import ProductDetails from './customer/components/ProductDetails/ProductDetails';
+import ProductDetails from './customer/ProductDetails/ProductDetails';
 import CheckOut from './customer/components/CheckOut/CheckOut';
 import Order from './customer/components/Order/Order';
 import OrderDetail from './customer/components/Order/OrderDetail';
@@ -17,6 +17,7 @@ function App() {
       <Routes>
         <Route path='/*' element={<CustomerRouter />}></Route>
       </Routes>
+
     </div>
   );
 }
