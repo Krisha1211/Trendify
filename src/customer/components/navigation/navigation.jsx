@@ -184,7 +184,7 @@ const [openAuthModal, setOpenAuthModal] = useState(false);
     setOpenAuthModal(true);
   };
 
-  //  for handle which element is currenttargeted.....in menu..
+  //  for handle which element is current targeted.....in menu..
   const handleUserClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
