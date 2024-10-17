@@ -1,18 +1,4 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/aspect-ratio'),
-    ],
-  }
-  ```
-*/
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import {
   Dialog,
   DialogPanel,
@@ -30,8 +16,13 @@ import {
 } from '@headlessui/react'
 import { Bars3Icon, MagnifyingGlassIcon, ShoppingBagIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { Button ,Avatar,Menu, MenuItem} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { deepPurple } from "@mui/material/colors";
+import  AuthModel from '../../Auth/AuthModel';
+import { useDispatch, useSelector } from 'react-redux';
+import { store } from '../../../State/store';
+import { getUser, logout } from '../../../State/Auth/Action';
+
 
 export const navigation = {
   categories: [
@@ -56,16 +47,16 @@ export const navigation = {
         {
           id: 'clothing',
           name: 'Clothing',
-          items: [
-            { name: 'Tops', id:"top", href: `{women/clothing/tops}` },
-            { name: 'Dresses', id:"women_dress", href: '#' },
+          items: [ 
+            { name: 'Tops', id:"top" },
+            { name: 'Dresses', id:"women_dress"},
             { name: 'Women Jeans', id: 'women_jeans' },
-            { name: 'Lengha Choli', id: 'lengha_choli' },
-            { name: 'Sweaters', id: 'sweater' },
+            { name: 'Lengha Choli', id: 'lengha_choli'},
+            { name: 'Sweaters', id: 'sweater'},
             { name: 'T-Shirts', id: 't-shirt' },
-            { name: 'Jackets', id: 'jacket' },
-            { name: 'Gouns', id: 'gouns' },
-            { name: 'Sarees', id: 'saree' },
+            { name: 'Jackets', id: 'jacket'},
+            { name: 'Gouns', id: 'gouns'},
+            { name: 'Sarees', id: 'saree'},
             { name: 'Kurtas', id: 'kurtas' },
           ],
         },
@@ -117,13 +108,13 @@ export const navigation = {
           id: 'clothing',
           name: 'Clothing',
           items: [
-            { name: 'Mens Kurtas', id: 'mens_kurta' },
-            { name: 'Shirt', id: 'shirt' },
+            { name: 'Mens Kurtas', id: 'mens_kurta'},
+            { name: 'Shirt', id: 'shirt'},
             { name: 'Men Jeans', id: 'men_jeans' },
-            { name: 'Sweaters', id: '#' },
-            { name: 'T-Shirts', id: 't-shirt' },
-            { name: 'Jackets', id: '#' },
-            { name: 'Activewear', id: '#' },
+            { name: 'Sweaters', id: 'sweaters' },
+            { name: 'T-Shirts', id: 't-shirt'},
+            { name: 'Jackets', id: 'jackets'}, 
+            { name: 'Activewear', id: 'Activewear'},
             
           ],
         },
@@ -157,6 +148,8 @@ export const navigation = {
     { name: 'Stores', id: '/' },
   ],
 }
+
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
@@ -169,6 +162,12 @@ const navigate = useNavigate();
 const [anchorEl, setAnchorEl] = useState(null);
 const openUserMenu = Boolean(anchorEl);
 const [openAuthModal, setOpenAuthModal] = useState(false);
+const jwt=localStorage.getItem("jwt");
+const {auth}=useSelector(store=>store);
+const dispatch=useDispatch();
+const location=useLocation();
+
+
 
 
   const handleCategoryClick = (category, section, item, close) => {
@@ -178,6 +177,11 @@ const [openAuthModal, setOpenAuthModal] = useState(false);
   // when close the menu...set current element ==null..
   const handleCloseUserMenu = (event) => {
     setAnchorEl(null);
+  };
+
+  
+  const handleClose = () => {
+    setOpenAuthModal(false);
   };
 
   const handleOpen = () => {
@@ -193,6 +197,32 @@ const [openAuthModal, setOpenAuthModal] = useState(false);
     {
       navigate("/account/order")
     }
+    useEffect(()=>
+      {
+        if(jwt)
+        {
+          dispatch(getUser())
+        }
+      },[jwt,auth.jwt])
+
+
+useEffect(()=>
+{
+  if(auth.user)
+  {
+    handleClose();
+  }
+  if(location.pathname==="/login" || location.pathname==="/register")
+  {
+     navigate(-1);
+  }
+
+},[auth.user])
+
+const handleLogout=()=>{
+  dispatch(logout());
+  handleCloseUserMenu();
+}
 
   return (
     <div className="bg-white">
@@ -337,7 +367,7 @@ const [openAuthModal, setOpenAuthModal] = useState(false);
 
       <header className="relative bg-white z-50">
         <p className="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
-          Get free delivery on orders over $100
+          Trendify
         </p>
 
         <nav aria-label="Top" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -475,7 +505,7 @@ const [openAuthModal, setOpenAuthModal] = useState(false);
 
               <div className="ml-auto flex items-center">
                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                  {true ? (
+                  {auth.user?.firstName ? (
                     <div>
                       <Avatar
                         className="text-white"
@@ -489,7 +519,7 @@ const [openAuthModal, setOpenAuthModal] = useState(false);
                           cursor: "pointer",
                         }}
                       >
-                       kv
+                      {auth.user?.firstName[0].toUpperCase()}
                       </Avatar>
                       <Menu
                         id="basic-menu"
@@ -503,7 +533,7 @@ const [openAuthModal, setOpenAuthModal] = useState(false);
                         <MenuItem onClick={handleCloseUserMenu}> profile</MenuItem>
                         <MenuItem onClick={handleMyOrderClick}>My Order
                         </MenuItem>
-                        <MenuItem>Logout</MenuItem>
+                        <MenuItem onClick={handleLogout}>Logout</MenuItem>
                       </Menu>
                     </div>
                   ) : (
@@ -543,6 +573,8 @@ const [openAuthModal, setOpenAuthModal] = useState(false);
           </div>
         </nav>
       </header>
+
+      <AuthModel handleClose={handleClose} open={openAuthModal}/>
     </div>
   )
 }

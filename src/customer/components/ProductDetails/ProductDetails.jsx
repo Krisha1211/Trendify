@@ -1,5 +1,5 @@
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Radio, RadioGroup } from '@headlessui/react'
 import { Rating } from '@mui/material'
 import Button from '@mui/material/Button';
@@ -9,7 +9,11 @@ import LinearProgress from '@mui/joy/LinearProgress';
 import Box from '@mui/material/Box';
 import Part2data from '../homesectionpart2/part2data';
 import Homesectionpart2 from '../homesectionpart2/homesectionpart2';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { findProductsById } from '../../../State/Product/Action';
+import { addItemToCart } from '../../../State/Cart/Action';
+
 const product = {
     name: 'Basic Tee 6-Pack',
     price: '$192',
@@ -65,15 +69,24 @@ function classNames(...classes) {
 }
 
 export default function ProductDetails() {
-    const [selectedColor, setSelectedColor] = useState(product.colors[0])
+    const [selectedColor, setSelectedColor] = useState("")
     const [selectedSize, setSelectedSize] = useState(product.sizes[2])
-   
-    const navigate= useNavigate();
+    const params = useParams();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const {products}=useSelector(store=>store)
 
-    const handleaddtocart=()=>
-        {
-            navigate("/cart")
-        }
+    const handleaddtocart = () => {
+        const data={productId:params.productId,size:selectedSize.name}
+
+        dispatch(addItemToCart(data))
+        navigate("/cart")
+    }
+
+    useEffect(() => {
+        const data = { productId: params.productId }
+        dispatch(findProductsById(data))
+    }, [params.productId])
 
 
     return (
@@ -113,7 +126,7 @@ export default function ProductDetails() {
                     <div className="flex flex-col items-center">
                         <div className="overflow-hidden rounded-lg max-w-[30rem] max-h-[35rem]">
                             <img
-                                src={product.images[0].src}
+                                src={products.product?.imgeUrl}
                                 alt={product.images[0].alt}
                                 className="h-full w-full object-cover object-center"
                             />
@@ -122,7 +135,7 @@ export default function ProductDetails() {
                             {product.images.map((item) =>
                                 <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg max-w-[5rem] max-h-[5rem] mt-4 ">
                                     <img
-                                        src={item.src}
+                                        src={products.product?.imgeUrl}
                                         alt={item.alt}
                                         className="h-full w-full object-cover object-center"
                                     />
@@ -134,8 +147,8 @@ export default function ProductDetails() {
                     {/* Product info */}
                     <div className="lg:col-span-1 maxt-auto max-w-2xl px-4 pb-16 sm:px-6 lg:max-w-7xl lg:px-8 lg:pb-24">
                         <div className="lg:col-span-2">
-                            <h1 className="text-lg lg:text-xl font-semibold text-gray-900 text-left">Riya Creation</h1>
-                            <h1 className='text-lg lg:text-xl text-gray-900 opacity-60 pt-1 text-left'>Houndstooth Rayon Blend Stitched Anarkali Gown </h1>
+                            <h1 className="text-lg lg:text-xl font-semibold text-gray-900 text-left">{products.product?.brand}</h1>
+                            <h1 className='text-lg lg:text-xl text-gray-900 opacity-60 pt-1 text-left'>{products.product?.title}</h1>
                         </div>
 
                         {/* Options */}
@@ -143,13 +156,13 @@ export default function ProductDetails() {
                             <h2 className="sr-only">Product information</h2>
                             <div className='flex space-x-5 items-center text-lg lg:text-xl text-color-gray-900 mt-6'>
                                 <p className='font-semibold'>
-                                    ₹466
+                                   {products.product?.discountedPrice}
                                 </p>
                                 <p className='opacity-50 line-through'>
-                                    ₹999
+                                   {products.product?.price}
                                 </p>
                                 <p className='text-green-600 font-semibold'>
-                                    53% off
+                                   {products.product?.discountPresent}
                                 </p>
 
                             </div>
@@ -229,10 +242,10 @@ export default function ProductDetails() {
                                         </RadioGroup>
                                     </fieldset>
                                 </div>
-                                <div className='text-left py-2'>  
-                                 <Button onClick={handleaddtocart} variant="contained" sx={{ px: "2rem", py: "1rem", bgcolor: "#9155fd" }}>
-                                    Add To Cart
-                                </Button>
+                                <div className='text-left py-2'>
+                                    <Button onClick={handleaddtocart} variant="contained" sx={{ px: "2rem", py: "1rem", bgcolor: "#9155fd" }}>
+                                        Add To Cart
+                                    </Button>
                                 </div>
 
                             </form>

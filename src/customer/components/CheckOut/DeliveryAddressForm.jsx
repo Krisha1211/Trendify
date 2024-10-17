@@ -3,21 +3,29 @@ import { Grid, TextField } from '@mui/material'
 import AddressCard from '../AddressCard/AddressCard';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
+import { useDispatch } from 'react-redux';
+import { createOrder } from '../../../State/Order/Action';
+import { useNavigate } from 'react-router-dom';
 const DeliveryAddressForm = () => {
+
+    const dispatch=useDispatch();
+    const navigate= useNavigate();
 
     const handlesubmit=(e)=>{
         e.preventDefault();
     const data= new FormData(e.currentTarget);
-    const data2={
-        firstname:data.get("firstname"),
-        lastname:data.get("lastname"),
+    const address={
+        firstName:data.get("firstName"),
+        lastName:data.get("lastName"),
         streetAddress:data.get("address"),
         city:data.get("city"),
         state:data.get("state"),
         zipcode:data.get("zipcode"),
-        mobileno:data.get("phoneNumber")
+        mobileNo:data.get("mobileNo")
     }
-    console.log("address",data2);
+    const orderData={address,navigate}
+    dispatch(createOrder(orderData))
+
     }
     return (
         <div>
@@ -38,8 +46,8 @@ const DeliveryAddressForm = () => {
                                 <Grid items xs={12} sm={6} p={1}>
                                     <TextField 
                                     required
-                                    id='firstname'
-                                    name='firstname'
+                                    id='firstName'
+                                    name='firstName'
                                     label='First Name'
                                     fullWidth
                                     autoComplete='given-name'/>
@@ -47,8 +55,8 @@ const DeliveryAddressForm = () => {
                                 <Grid items xs={12} sm={6} p={1}>
                                     <TextField 
                                     required
-                                    id='lastname'
-                                    name='lastname'
+                                    id='lastName'
+                                    name='lastName'
                                     label='Last Name'
                                     fullWidth
                                     autoComplete='given-name'/>
@@ -85,8 +93,8 @@ const DeliveryAddressForm = () => {
                                 <Grid items xs={12} sm={6} p={1}>
                                     <TextField 
                                     required
-                                    id='zip'
-                                    name='zip'
+                                    id='zipcode'
+                                    name='zipcode'
                                     label='Zip/Postal Code'
                                     fullWidth
                                     autoComplete='shipping postal-code'/>
@@ -94,8 +102,8 @@ const DeliveryAddressForm = () => {
                                 <Grid items xs={12} sm={6} p={1}>
                                     <TextField 
                                     required
-                                    id='phoneNumber'
-                                    name='phoneNumber'
+                                    id='mobileNo'
+                                    name='mobileNo'
                                     label='Phone Number'
                                     fullWidth
                                     autoComplete='given-name'/>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Part2data from '../homesectionpart2/part2data';
 import {
   Dialog,
@@ -16,9 +16,13 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid';
 import Productcard from './productcard';
 import { filters, singlefilter } from './filter';
-import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import { FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, colors } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { findProducts } from '../../../State/Product/Action';
+import Pagination from '@mui/material/Pagination';
+import { store } from '../../../State/store';
 
 const sortOptions = [
   { name: 'Price: Low to High', href: '#', current: false },
@@ -31,9 +35,21 @@ function classNames(...classes) {
 
 export default function Product() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
-
-  const location=useLocation();
+const location=useLocation();
 const navigate=useNavigate();
+const param = useParams();
+const dispatch=useDispatch();
+const {products}=useSelector(store=>store)
+
+const decodedQueryString = decodeURIComponent(location.search);
+const searchParams = new URLSearchParams(decodedQueryString);
+const colorValue=searchParams.get("color")
+const sizeValue = searchParams.get("size")
+const priceValue = searchParams.get("price")
+const discount = searchParams.get("discount")
+const sortValue = searchParams.get("sort")
+const pageNumber = searchParams.get("page") || 1;
+const stock=searchParams.get("stock")
 
 const handleFilter=(value,sectionId)=>{
   const searchParams = new URLSearchParams(location.search);
@@ -58,12 +74,56 @@ const handleFilter=(value,sectionId)=>{
   navigate({ search: `?${query}` });
 };
 
-const handleRadioFilterChange=(e,sectionId)=>{
+const handleRadioFilterChange = (e, sectionId) => {
   const searchParams = new URLSearchParams(location.search);
-    searchParams.set(sectionId,e.target.value);
-    const query = searchParams.toString();
-  navigate({ search: `?${query}` });
+  const currentValue = searchParams.get(sectionId);
+
+  if (currentValue === e.target.value) {
+      searchParams.delete(sectionId);
+  } else {
+      searchParams.set(sectionId, e.target.value);
+  }
+
+  const query = searchParams.toString();
+  navigate(`?${query}`);
+};
+
+
+const handlePaginationChange =(event,value)=>
+{
+  const searchParams= new URLSearchParams(location.search)
+  searchParams.set("page",value);
+  const query=searchParams.toString();
+  // go to that query..
+  navigate({search:`${query}`})
 }
+
+useEffect(()=>
+{
+   const [minPrice,maxPrice]=priceValue===null?[0,1000]:priceValue.split("-").map(Number);
+   const data={
+    category:param.lavelThree,
+    color:colorValue || [],
+    sizes:sizeValue | [],
+    minPrice,
+    maxPrice,
+    minDiscount:discount || 0,
+    sort:sortValue || "price_low",
+    pageNumber:pageNumber-1,
+    pageSize:1,
+    stock:stock
+   }
+dispatch(findProducts(data));
+
+},[param.lavelThree,
+  colorValue,
+  sizeValue,
+  priceValue,
+  discount,
+  sortValue,
+  pageNumber,
+  stock
+])
 
   return (
     <div className="bg-white">
@@ -341,9 +401,15 @@ const handleRadioFilterChange=(e,sectionId)=>{
               {/* Product grid */}
               <div className="lg:col-span-4 w-full">
                 <div className='flex flex-wrap justify-center bg-white py-5'>
-                  {Part2data.map((item)=><Productcard product={item}/>)}
+                  {products.products && products.products?.content?.map((item)=><Productcard product={item}/>)}
                 </div>
               </div>
+            </div>
+          </section>
+
+          <section className='w-full px=[3.6rem]'>
+            <div className='px-4 py-5 flex justify-center '>
+            <Pagination count={products.products.totalPages} color="secondary" onChange={handlePaginationChange} />
             </div>
           </section>
         </main>

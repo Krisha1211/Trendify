@@ -9,6 +9,7 @@ import ProductDetails from '../customer/components/ProductDetails/ProductDetails
 import CheckOut from '../customer/components/CheckOut/CheckOut'
 import Order from '../customer/components/Order/Order'
 import OrderDetail from '../customer/components/Order/OrderDetail'
+import PaymentSuccess from '../customer/components/Payment/PaymentSuccess'
 
 const CustomerRouter = () => {
   return (
@@ -17,6 +18,10 @@ const CustomerRouter = () => {
       <Navigation />
       </div>
       <Routes>
+      <Route path='/login' element={<Homepage />}></Route>
+      <Route path='/register' element={<Homepage />}></Route>
+
+
         {/* in path which path i have to use...and in element which page or element i have to show on this path.. */}
         <Route path='/' element={<Homepage />}></Route>
         <Route path='/cart' element={<Cart />}></Route>
@@ -26,6 +31,7 @@ const CustomerRouter = () => {
         <Route path='/checkout' element={<CheckOut/>}></Route>
         <Route path='/account/order' element={ <Order/>}></Route>
         <Route path='/account/order/:orderId' element={  <OrderDetail />}></Route>
+        <Route path='/payment/:orderId' element={  <PaymentSuccess />}></Route>
       </Routes>
 
       <div>
