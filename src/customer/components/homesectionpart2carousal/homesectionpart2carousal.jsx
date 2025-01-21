@@ -31,7 +31,6 @@ const Homesectionpart2carousal = ({data,sectionname}) => {
   };
 
   return (
-  
     <div className="relative px-4 lg:px-8">
    <h2 className="text-2xl font-extrabold text-gray-800 py-4 px-0 " 
     style={{ textAlign: 'left', marginLeft: '0' }} 

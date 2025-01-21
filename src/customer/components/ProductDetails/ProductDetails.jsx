@@ -13,6 +13,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { findProductsById } from '../../../State/Product/Action';
 import { addItemToCart } from '../../../State/Cart/Action';
+import useProductsByCategory from '../homesectionpart2/category';
 
 const product = {
     name: 'Basic Tee 6-Pack',
@@ -87,8 +88,9 @@ export default function ProductDetails() {
         const data = { productId: params.productId }
         dispatch(findProductsById(data))
     }, [params.productId])
-
-
+ console.log(products.product);
+    const categorywise = useProductsByCategory(products.product?.category.name);
+    console.log(categorywise);
     return (
         <div className="bg-white lg:px-20">
             <div className="pt-6">
@@ -253,35 +255,15 @@ export default function ProductDetails() {
 
                         <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">
                             {/* Description and details */}
-                            <div>
-                                <h3 className="sr-only">Description</h3>
 
+                            <div className="mt-10">
+                                <h3 className="text-sm font-medium text-gray-900">Description</h3>
+                                
                                 <div className="space-y-6">
-                                    <p className="text-base text-gray-900">{product.description}</p>
+                                    <p className="text-base text-gray-900">{products.product?.description}</p>
                                 </div>
                             </div>
 
-                            <div className="mt-10">
-                                <h3 className="text-sm font-medium text-gray-900">Highlights</h3>
-
-                                <div className="mt-4">
-                                    <ul role="list" className="list-disc space-y-2 pl-4 text-sm">
-                                        {product.highlights.map((highlight) => (
-                                            <li key={highlight} className="text-gray-400">
-                                                <span className="text-gray-600">{highlight}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div className="mt-10">
-                                <h2 className="text-sm font-medium text-gray-900">Details</h2>
-
-                                <div className="mt-4 space-y-6">
-                                    <p className="text-sm text-gray-600">{product.details}</p>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -361,7 +343,7 @@ export default function ProductDetails() {
                 <section className='pt-10'>
                     <h1 className='text-left py-2 text-xl font-bold'>Similar Product</h1>
                     <div className='flex flex-wrap space-y-5'>
-                        {Part2data.map((item) => <Homesectionpart2 product={item} />)}
+                        {categorywise.map((item) => <Homesectionpart2  key={item.id} product={item} />)}
                     </div>
                 </section>
             </div>
